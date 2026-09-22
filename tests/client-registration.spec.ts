@@ -51,6 +51,8 @@ describe('OpenAI Codex browser contribution', () => {
     expect(client).toContain("id: 'openai-codex-quota'")
     expect(client).toContain('order: 20')
     expect(client.indexOf("id: 'openai-codex-fast-mode'")).toBeLessThan(client.indexOf("id: 'openai-codex-quota'"))
+    expect(client).not.toContain('AdaptiveTaskControl')
+    expect(client).not.toContain("id: 'codex-connect-task-models'")
   })
 
   it('registers the version reminder in DSH’s frame-wide shell overlay', async () => {

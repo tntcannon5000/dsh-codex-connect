@@ -35,7 +35,6 @@ import { OpenAICodexAccountStore } from './account-store.ts'
 import { OpenAICodexModelsCard } from './OpenAICodexModelsCard.tsx'
 import { OpenAICodexBundleConfig } from './OpenAICodexBundleConfig.tsx'
 import type { OpenAICodexBundleConfigInjected } from './OpenAICodexBundleConfig.tsx'
-import { AdaptiveTaskControl } from './AdaptiveTaskControl.tsx'
 
 declare module '@deepseek-ai/dsh-client-ui-slots' {
   interface LocaleNamespaceMap {
@@ -86,13 +85,6 @@ export function apply(ctx: ClientContext): void {
     inject: (): { updater: OpenAICodexUpdateStore } => ({ updater }),
   }, OpenAICodexUpdateOverlay))
 
-  ctx.slots.inject('conversation.input.right', () => ctx.slots.register({
-    name: 'conversation.input.right',
-    id: 'codex-connect-task-models',
-    order: 30,
-    inject: () => ({ language: t('adaptiveTaskLanguage') }),
-  }, AdaptiveTaskControl))
-
   ctx.slots.inject('tool.call.toolview', () => ctx.slots.register({
     name: 'tool.call.toolview',
     key: 'codex_connect_image_generate',
@@ -100,6 +92,8 @@ export function apply(ctx: ClientContext): void {
     inject: (): CodexImageToolViewInjected => ({ sessions: ctx.sessions }),
   }, CodexImageToolView))
 
+  // Task-level automatic selection stays out of Composer until its fixed
+  // start route and available-model catalog agree with user visibility.
   ctx.inject(['slots', 'modelDirectories'], (scope: ClientContext) => {
     scope.slots.inject('conversation.input.right', () => scope.slots.register({
       name: 'conversation.input.right',
