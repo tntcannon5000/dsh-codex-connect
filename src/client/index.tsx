@@ -6,6 +6,7 @@ import type {} from '@deepseek-ai/dsh-client-ui-session/client'
 import type {} from '@deepseek-ai/dsh-client-ui-settings/client'
 import type {} from '@deepseek-ai/dsh-client-ui-settings-models/client'
 import type {} from '@deepseek-ai/dsh-client-ui-settings-plugins/client'
+import type {} from '@deepseek-ai/dsh-client-ui-plugin-manager/client'
 import type {} from '@deepseek-ai/dsh-client-locale/client'
 import type {} from '@deepseek-ai/dsh-client-ui-tool/client'
 import type {} from '@deepseek-ai/dsh-client-ui-slots'
@@ -35,6 +36,7 @@ import { OpenAICodexUpdateStore } from './update-store.ts'
 import { CODEX_CONNECT_VERSION } from '../version.ts'
 import { OpenAICodexAccountStore } from './account-store.ts'
 import { OpenAICodexModelsCard } from './OpenAICodexModelsCard.tsx'
+import { OpenAICodexBundleConfig } from './OpenAICodexBundleConfig.tsx'
 import { AdaptiveTaskControl } from './AdaptiveTaskControl.tsx'
 
 declare module '@deepseek-ai/dsh-client-ui-slots' {
@@ -70,6 +72,12 @@ export function apply(ctx: ClientContext): void {
     key: OPENAI_CODEX_SETTINGS_NAMESPACE,
     inject: (): OpenAICodexPluginCardInjected => ({ t, configScope, updater, account }),
   }, OpenAICodexPluginCard))
+
+  ctx.slots.inject('plugins.bundle.config', () => ctx.slots.register({
+    name: 'plugins.bundle.config',
+    key: 'dsh-codex-connect',
+    inject: () => ({ t, account, configScope }),
+  }, OpenAICodexBundleConfig))
 
   ctx.slots.inject('settings.models.footer', () => ctx.slots.register({
     name: 'settings.models.footer',

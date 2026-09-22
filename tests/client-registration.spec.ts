@@ -27,6 +27,14 @@ describe('OpenAI Codex browser contribution', () => {
     expect(client).not.toContain("ctx.slots.inject('settings.section'")
   })
 
+  it('registers the installed bundle on the dedicated Plugins page', async () => {
+    const client = await readFile(new URL('../src/client/index.tsx', import.meta.url), 'utf8')
+    expect(client).toContain("ctx.slots.inject('plugins.bundle.config'")
+    expect(client).toContain("name: 'plugins.bundle.config'")
+    expect(client).toContain("key: 'dsh-codex-connect'")
+    expect(client).toContain('}, OpenAICodexBundleConfig))')
+  })
+
   it('registers the weekly quota in the additive right-side Composer list slot', async () => {
     const client = await readFile(new URL('../src/client/index.tsx', import.meta.url), 'utf8')
     expect(client).toContain("scope.slots.inject('conversation.input.right'")

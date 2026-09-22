@@ -9,7 +9,10 @@ import {
   OPENAI_CODEX_REQUEST_IMAGE_PIXEL_BUDGET,
   OPENAI_CODEX_TRANSPORT,
   OPENAI_CODEX_ASTRA_MODEL_ID,
+  OPENAI_CODEX_SOL_MODEL_ID,
+  OPENAI_CODEX_LUNA_MODEL_ID,
   withOpenAICodexAstra,
+  withOpenAICodexSolLuna,
   withOpenAICodexContextWindowOverrides,
 } from '../src/adapter.ts'
 import type { OpenAICodexCredentialStore } from '../src/store.ts'
@@ -47,6 +50,21 @@ describe('OpenAI Codex rc.2 adapter profile', () => {
   it('distinguishes an omitted model list from an explicitly empty list', () => {
     expect(Config({}).models).toBeUndefined()
     expect(Config({ models: [] }).models).toEqual([])
+  })
+
+  it('adds Sol and Luna only when the installed provider catalog lacks them', () => {
+    const provider = openaiCodexProvider()
+    const augmented = withOpenAICodexSolLuna(provider)
+    for (const id of [OPENAI_CODEX_SOL_MODEL_ID, OPENAI_CODEX_LUNA_MODEL_ID]) {
+      expect(augmented.getModels().filter(model => model.id === id)).toEqual([expect.objectContaining({
+        id, provider: OPENAI_CODEX_PROVIDER, api: 'openai-codex-responses',
+        contextWindow: 272_000, maxTokens: 128_000,
+      })])
+    }
+    const nativeSol = { ...augmented.getModels()[0]!, id: OPENAI_CODEX_SOL_MODEL_ID, name: 'Native Sol' }
+    const withNative = withOpenAICodexSolLuna({ ...provider, getModels: () => [nativeSol, ...provider.getModels()] })
+    expect(withNative.getModels().find(model => model.id === OPENAI_CODEX_SOL_MODEL_ID)).toBe(nativeSol)
+    expect(withNative.getModels().filter(model => model.id === OPENAI_CODEX_SOL_MODEL_ID)).toHaveLength(1)
   })
 
   it('supplies all request-image defaults required by ResolvedPiAiProviderProfile', () => {

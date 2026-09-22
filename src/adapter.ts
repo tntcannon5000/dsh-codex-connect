@@ -30,6 +30,8 @@ export interface OpenAICodexTaskDispatch {
 
 /** Official Codex id supplied when the installed pi-ai catalog predates Astra. */
 export const OPENAI_CODEX_ASTRA_MODEL_ID = 'gpt-6-astra'
+export const OPENAI_CODEX_SOL_MODEL_ID = 'gpt-6-sol'
+export const OPENAI_CODEX_LUNA_MODEL_ID = 'gpt-6-luna'
 
 const OPENAI_CODEX_ASTRA_MODEL: Model<'openai-codex-responses'> = {
   id: OPENAI_CODEX_ASTRA_MODEL_ID,
@@ -51,6 +53,22 @@ const OPENAI_CODEX_ASTRA_MODEL: Model<'openai-codex-responses'> = {
   },
 }
 
+/** Official Codex models added after the installed pi-ai catalog was published. */
+const OPENAI_CODEX_NEW_MODEL_FALLBACKS: readonly Model<'openai-codex-responses'>[] = [
+  { ...OPENAI_CODEX_ASTRA_MODEL, id: OPENAI_CODEX_SOL_MODEL_ID, name: 'GPT-6-Sol' },
+  { ...OPENAI_CODEX_ASTRA_MODEL, id: OPENAI_CODEX_LUNA_MODEL_ID, name: 'GPT-6-Luna' },
+]
+
+/** Add only missing models, preserving any native pi-ai definitions. */
+export function withOpenAICodexSolLuna(
+  provider: Provider<'openai-codex-responses'>,
+): Provider<'openai-codex-responses'> {
+  const baseline = provider.getModels()
+  const nativeIds = new Set(baseline.map(model => model.id))
+  const fallbacks = OPENAI_CODEX_NEW_MODEL_FALLBACKS.filter(model => !nativeIds.has(model.id))
+  return { ...provider, getModels: () => [...fallbacks, ...baseline] }
+}
+
 /** Preserve native Astra metadata with calibrated effort choices, or add the fallback. */
 export function withOpenAICodexAstra(
   provider: Provider<'openai-codex-responses'>,
@@ -66,7 +84,7 @@ export function withOpenAICodexAstra(
 
 /** Return a detached copy of the effective Codex model catalog. */
 export function openAICodexModelCatalog(): readonly OpenAICodexModelCatalogEntry[] {
-  return withOpenAICodexAstra(openaiCodexProvider()).getModels().map(model => ({
+  return withOpenAICodexAstra(withOpenAICodexSolLuna(openaiCodexProvider())).getModels().map(model => ({
     id: model.id, name: model.name, contextWindow: model.contextWindow,
     ...openAICodexContextLimit(model.id, model.contextWindow),
   }))
@@ -260,7 +278,7 @@ export function createOpenAICodexAdapter(
   backendRequests?: OpenAICodexBackendRequests,
   taskDispatch?: OpenAICodexTaskDispatch,
 ): PiAiAdapter {
-  const baseline = withOpenAICodexAstra(openaiCodexProvider())
+  const baseline = withOpenAICodexAstra(withOpenAICodexSolLuna(openaiCodexProvider()))
   const provider = reservePermits === undefined ? baseline : withOpenAICodexReserve(baseline, reservePermits)
   let profiles: Map<string, ResolvedPiAiProviderProfile> | undefined
   let previousOverrides: Readonly<Record<string, number>> | undefined

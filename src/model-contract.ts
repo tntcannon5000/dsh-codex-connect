@@ -4,10 +4,12 @@
 export const OPENAI_CODEX_MODEL_CATALOG_PATH = '/plugins/dsh-codex-connect/models'
 
 /** Versioned official-client override policy, not a measured endpoint capacity. */
-export const OPENAI_CODEX_CONTEXT_LIMIT_SOURCE = 'https://github.com/openai/codex/blob/a97cf1b72eaad05aa49847bc81d09ceac9327754/codex-rs/models-manager/models.json'
+export const OPENAI_CODEX_CONTEXT_LIMIT_SOURCE = 'https://github.com/openai/codex/blob/49e95cc73f4eb2999b1d14f863c009168df6122b/codex-rs/models-manager/models.json'
 
 const CONFIGURATION_LIMITS: Readonly<Record<string, number>> = Object.freeze({
   'gpt-6-astra': 872_000,
+  'gpt-6-sol': 872_000,
+  'gpt-6-luna': 872_000,
   'gpt-5.6-sol': 872_000,
   'gpt-5.6-terra': 872_000,
   'gpt-5.6-luna': 872_000,
