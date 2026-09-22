@@ -6,25 +6,21 @@ describe('OpenAI Codex browser contribution', () => {
     const client = await readFile(new URL('../src/client/index.tsx', import.meta.url), 'utf8')
     expect(client).toContain("ctx.slots.inject('settings.models.footer'")
     expect(client).toContain("id: 'dsh-codex-connect-account'")
-    expect(client).toContain('({ t, configScope, updater, account })')
+    expect(client).toContain('({ t, account, configScope, updater })')
     expect(client).toContain('inject: () => ({ t, account, configScope })')
     expect(client).toContain('account.dispose()')
     expect(client.match(/new OpenAICodexAccountStore\(\)/g)).toHaveLength(1)
     expect(client).not.toContain("ctx.slots.inject('settings.models.provider-card'")
   })
-  it('registers as a Plugin configuration card instead of adding a tab or section', async () => {
+  it('registers only on the dedicated Plugins page, with the shared settings scope', async () => {
     const client = await readFile(new URL('../src/client/index.tsx', import.meta.url), 'utf8')
-    expect(client).toContain("ctx.slots.inject('settings.plugin.item'")
-    expect(client).toContain("name: 'settings.plugin.item'")
-    expect(client).toContain('key: OPENAI_CODEX_SETTINGS_NAMESPACE')
+    expect(client).not.toContain("ctx.slots.inject('settings.plugin.item'")
+    expect(client).toContain("ctx.slots.inject('plugins.bundle.config'")
+    expect(client).toContain("key: 'dsh-codex-connect'")
     expect(client).not.toContain("id: 'openai-codex'")
-    const settingsCard = client.split("ctx.slots.inject('settings.plugin.item'")[1]!.split("ctx.slots.inject('settings.models.footer'")[0]!
-    expect(settingsCard).not.toContain('order: 30')
     expect(client).toContain('ctx.settingsScope.bind')
     expect(client).toContain('OPENAI_CODEX_SETTINGS_NAMESPACE')
     expect(client).not.toContain("namespace: 'web'")
-    expect(client).not.toContain("ctx.slots.inject('settings.plugins.tab'")
-    expect(client).not.toContain("ctx.slots.inject('settings.section'")
   })
 
   it('registers the installed bundle on the dedicated Plugins page', async () => {
@@ -69,14 +65,16 @@ describe('OpenAI Codex browser contribution', () => {
     expect(parsed.dsh.client.inject).toContain('@deepseek-ai/dsh-client-ui-layout')
   })
 
-  it('renders a Codex Connect card and uses OpenAI Codex for the Composer provider', async () => {
-    const [clientCard, locales, adapter] = await Promise.all([
-      readFile(new URL('../src/client/OpenAICodexPluginCard.tsx', import.meta.url), 'utf8'),
+  it('renders the configuration modal on the bundle page and uses OpenAI Codex for the Composer provider', async () => {
+    const [bundleConfig, modelsCard, locales, adapter] = await Promise.all([
+      readFile(new URL('../src/client/OpenAICodexBundleConfig.tsx', import.meta.url), 'utf8'),
+      readFile(new URL('../src/client/OpenAICodexModelsCard.tsx', import.meta.url), 'utf8'),
       readFile(new URL('../src/client/locales.ts', import.meta.url), 'utf8'),
       readFile(new URL('../src/adapter.ts', import.meta.url), 'utf8'),
     ])
-    expect(clientCard).toContain('<li style={{ ...cardStyle, background:')
-    expect(clientCard).toContain('aria-expanded={open}')
+    expect(bundleConfig).toContain('<OpenAICodexUpdateSettings')
+    expect(bundleConfig).toContain('<OpenAICodexModelsCard')
+    expect(modelsCard).toContain('<OpenAICodexConfiguration')
     expect(locales.match(/title: 'Codex Connect'/gu)).toHaveLength(2)
     expect(adapter).toContain("displayName: 'OpenAI Codex'")
   })

@@ -1,11 +1,10 @@
-/** Browser half: OpenAI Codex account management inside Plugin configuration. */
+/** Browser half: OpenAI Codex account management on the Plugins page. */
 
 import type { Context as ClientContext } from '@deepseek-ai/cordis'
 import type {} from '@deepseek-ai/dsh-client-ui-renderer/client'
 import type {} from '@deepseek-ai/dsh-client-ui-session/client'
 import type {} from '@deepseek-ai/dsh-client-ui-settings/client'
 import type {} from '@deepseek-ai/dsh-client-ui-settings-models/client'
-import type {} from '@deepseek-ai/dsh-client-ui-settings-plugins/client'
 import type {} from '@deepseek-ai/dsh-client-ui-plugin-manager/client'
 import type {} from '@deepseek-ai/dsh-client-locale/client'
 import type {} from '@deepseek-ai/dsh-client-ui-tool/client'
@@ -21,8 +20,6 @@ import {
   decodeOpenAICodexSettings,
   OPENAI_CODEX_SETTINGS_NAMESPACE,
 } from '../settings-contract.ts'
-import { OpenAICodexPluginCard } from './OpenAICodexPluginCard.tsx'
-import type { OpenAICodexPluginCardInjected } from './OpenAICodexPluginCard.tsx'
 import { OpenAICodexQuotaIndicator } from './OpenAICodexQuotaIndicator.tsx'
 import type { OpenAICodexQuotaIndicatorInjected } from './OpenAICodexQuotaIndicator.tsx'
 import { OpenAICodexFastModeToggle } from './OpenAICodexFastModeToggle.tsx'
@@ -37,6 +34,7 @@ import { CODEX_CONNECT_VERSION } from '../version.ts'
 import { OpenAICodexAccountStore } from './account-store.ts'
 import { OpenAICodexModelsCard } from './OpenAICodexModelsCard.tsx'
 import { OpenAICodexBundleConfig } from './OpenAICodexBundleConfig.tsx'
+import type { OpenAICodexBundleConfigInjected } from './OpenAICodexBundleConfig.tsx'
 import { AdaptiveTaskControl } from './AdaptiveTaskControl.tsx'
 
 declare module '@deepseek-ai/dsh-client-ui-slots' {
@@ -48,10 +46,10 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
 
 /** Stable browser-plugin name. */
 export const name = 'dsh-codex-connect-client'
-/** Client services required by the Plugin configuration contribution. */
+/** Client services required by the Codex Connect browser contribution. */
 export const inject = ['slots', 'locale', 'connection', 'remote', 'remote.session', 'settingsScope', 'sessions']
 
-/** Register account copy and the OpenAI Codex card under Plugin configuration. */
+/** Register account copy and Codex Connect's dedicated Plugins page. */
 export function apply(ctx: ClientContext): void {
   const namespace = 'settings.openai-codex'
   const updater = new OpenAICodexUpdateStore(CODEX_CONNECT_VERSION)
@@ -62,21 +60,15 @@ export function apply(ctx: ClientContext): void {
     return () => { updater.dispose() }
   }, 'dsh-codex-connect: update checker')
   ctx.effect(() => ctx.locale.register(namespace, { zh, en }), 'dsh-codex-connect: settings copy')
-  const t = ctx.locale.bind(namespace) as OpenAICodexPluginCardInjected['t']
+  const t = ctx.locale.bind(namespace) as OpenAICodexBundleConfigInjected['t']
   const configScope = ctx.settingsScope.bind({
     namespace: OPENAI_CODEX_SETTINGS_NAMESPACE,
     decode: decodeOpenAICodexSettings,
   })
-  ctx.slots.inject('settings.plugin.item', () => ctx.slots.register({
-    name: 'settings.plugin.item',
-    key: OPENAI_CODEX_SETTINGS_NAMESPACE,
-    inject: (): OpenAICodexPluginCardInjected => ({ t, configScope, updater, account }),
-  }, OpenAICodexPluginCard))
-
   ctx.slots.inject('plugins.bundle.config', () => ctx.slots.register({
     name: 'plugins.bundle.config',
     key: 'dsh-codex-connect',
-    inject: () => ({ t, account, configScope }),
+    inject: (): OpenAICodexBundleConfigInjected => ({ t, account, configScope, updater }),
   }, OpenAICodexBundleConfig))
 
   ctx.slots.inject('settings.models.footer', () => ctx.slots.register({

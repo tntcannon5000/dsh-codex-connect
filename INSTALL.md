@@ -1,5 +1,7 @@
 # Installation Runbook for CLI Agents
 
+This fork's `main` branch uses the dedicated Plugins page in DSH `0.1.6-alpha.2`. The published Alpha 4.39 instructions and verified pairing table below describe the upstream npm package; do not treat them as validation of the fork on a newer host.
+
 Published Alpha 4.39 is verified with DSH `0.1.2-rc.1` and pi-ai `0.84.4` within `^0.84.2`, and with each exact DSH `0.1.5-alpha.1`, `0.1.5-rc.1`, and `0.1.5-rc.2` model-runtime pairing using pi-ai `0.85.1`.
 
 Install `dsh-codex-connect` into one requested DeepSeek Harness profile without changing its current default model, search route, global configuration, or OAuth state.
@@ -87,7 +89,7 @@ Alpha 4.33 omits the `modelErrors` profile field required by RC model packages, 
    dsh plugin --profile web exec dsh-codex-connect doctor
    ```
 
-7. If the user explicitly requests login, open **Settings → Plugins → Plugin configuration → Codex Connect**, or check `status` and then use `login` or `login --device-code`. OAuth approval belongs to the user.
+7. If the user explicitly requests login, open **Plugins → Codex Connect**, or check `status` and then use `login` or `login --device-code`. OAuth approval belongs to the user.
 
    Alpha 4.25 offers the same account actions in **Settings → Models → Openai-Codex**, plus a shared **More settings** dialog for model visibility, proxy, search, image, context-budget, and Auto-review controls. The original Plugin settings entry remains available; neither entry automatically starts login or changes model/search defaults.
 
@@ -106,7 +108,7 @@ The value is a full `http://` or `https://` origin including its port, not a bar
 
 ## Optional configuration
 
-Use **Settings → Plugins → Plugin configuration → Codex Connect** for live, staged Save/Discard edits organized under Account & quota, Models, Network, and Capabilities. Switching modules preserves the draft. The same settings control `enableSearch`, `enableReserveFallback`, `enableImageTool`, `enableImageGeneration`, and `enableAutoReview`; all five default to `false`. Luna Reserve is a published experiment in Alpha 4.35: enable it only when explicitly requested, never as an automatic installation step. Real-account Reserve entry and recovery remain unverified; authorization must come from the identity-matched backend response, not a generic `429` or quota percentage. Enabling Auto-review permits bounded approval context, tool arguments, working directory, and the planned action to be sent to `chatgpt.com`; failures return to human approval. Enabling image generation uses the image generation capability included with the current GPT subscription and saves results as DSH attachments. Enabling search registers the provider and selects it while the capability remains enabled; disabling restores the previous provider before unregistering Codex Search. Setting `agent-default-model` to `openai-codex` remains a separate explicit change.
+Use **Plugins → Codex Connect → More settings** for live, staged Save/Discard edits organized under Models, Network, and Capabilities; account and update controls are on the Codex Connect page. Switching modules preserves the draft. The same settings control `enableSearch`, `enableReserveFallback`, `enableImageTool`, `enableImageGeneration`, and `enableAutoReview`; all five default to `false`. Luna Reserve is a published experiment in Alpha 4.35: enable it only when explicitly requested, never as an automatic installation step. Real-account Reserve entry and recovery remain unverified; authorization must come from the identity-matched backend response, not a generic `429` or quota percentage. Enabling Auto-review permits bounded approval context, tool arguments, working directory, and the planned action to be sent to `chatgpt.com`; failures return to human approval. Enabling image generation uses the image generation capability included with the current GPT subscription and saves results as DSH attachments. Enabling search registers the provider and selects it while the capability remains enabled; disabling restores the previous provider before unregistering Codex Search. Setting `agent-default-model` to `openai-codex` remains a separate explicit change.
 
 Apply only requested choices and preserve unrelated keys:
 

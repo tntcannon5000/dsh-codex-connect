@@ -5,6 +5,7 @@ import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import type { SettingsScope, SettingsScopeSnapshot } from '@deepseek-ai/dsh-client-ui-settings/client'
 import { OpenAICodexBundleConfig } from '../src/client/OpenAICodexBundleConfig.tsx'
 import { OpenAICodexAccountStore } from '../src/client/account-store.ts'
+import { OpenAICodexUpdateStore } from '../src/client/update-store.ts'
 import { en } from '../src/client/locales.ts'
 import { OPENAI_CODEX_MODEL_CATALOG_PATH } from '../src/model-contract.ts'
 import { DEFAULT_OPENAI_CODEX_SETTINGS, resolveOpenAICodexSettings } from '../src/settings-contract.ts'
@@ -57,14 +58,16 @@ it('opens the model selector from the dedicated Plugins bundle page and saves vi
     unset: vi.fn(async () => undefined),
   }
   const account = new OpenAICodexAccountStore()
+  const updater = new OpenAICodexUpdateStore('0.1.0-alpha.4.39')
   const t = (key: keyof typeof en) => en[key]
-  const injected = { t, account, configScope } as const
+  const injected = { t, account, configScope, updater } as const
 
   const summary = render(<OpenAICodexBundleConfig view="summary" {...injected} />)
   expect(summary.container.textContent).toBe(en.intro)
   summary.unmount()
 
   render(<OpenAICodexBundleConfig view="page" {...injected} />)
+  expect(screen.getByText(en.updateHeading)).toBeTruthy()
   fireEvent.click(screen.getByRole('button', { name: en.moreSettings }))
   const dialog = await screen.findByRole('dialog', { name: en.moreSettingsTitle })
   expect(dialog.hasAttribute('open')).toBe(true)
@@ -77,4 +80,5 @@ it('opens the model selector from the dedicated Plugins bundle page and saves vi
   await waitFor(() => expect(snapshot.value?.models).toEqual(['gpt-6-sol']))
   expect(mutate).toHaveBeenCalledWith([{ op: 'set', path: ['models'], value: ['gpt-6-sol'] }], 0)
   account.dispose()
+  updater.dispose()
 })

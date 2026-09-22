@@ -10,6 +10,8 @@ Community Alpha — not affiliated with or endorsed by OpenAI, ChatGPT, Codex, D
 
 Codex Connect adds the `openai-codex` model provider to the normal Harness agent loop. Harness continues to manage tools, permissions, approvals, attachments, session persistence, compaction, and recovery. Installing the plugin does not change your default model or search route, and it does not turn a ChatGPT subscription into an OpenAI Platform API key.
 
+This fork's `main` branch targets the dedicated Plugins page in DeepSeek Harness `0.1.6-alpha.2`; its live-host compatibility is being verified separately. The published npm Alpha and compatibility table below describe the upstream release, not this fork.
+
 ## Quick start
 
 This guide describes the published pairings below. Check `dsh --version` first and use `doctor --json` to inspect the installed model-runtime packages: an rc.1 CLI can resolve rc.2 packages. For other versions, use [Installation and upgrades](INSTALL.md). A moving npm tag such as `alpha` is not a compatibility guarantee.
@@ -65,7 +67,7 @@ dsh plugin --profile web exec dsh-codex-connect doctor --json
 
 ## Optional capabilities
 
-All options below are off on a fresh installation. Edit them in **Settings → Plugins → Plugin configuration → Codex Connect** or **Settings → Models → Openai-Codex → More settings**, then select **Save changes**. A conflict or failed save preserves your draft.
+All options below are off on a fresh installation. Edit them in **Plugins → Codex Connect → More settings** or **Settings → Models → Openai-Codex → More settings**, then select **Save changes**. A conflict or failed save preserves your draft.
 
 | Capability | Enable with | Important behavior |
 |---|---|---|

@@ -1,4 +1,4 @@
-/** Plugin-owned OpenAI Codex account controls used inside Plugin configuration. */
+/** Plugin-owned OpenAI Codex account and configuration controls. */
 
 import { useCallback, useEffect, useState, useSyncExternalStore, useId } from 'react'
 import type { CSSProperties } from 'react'
